@@ -1,0 +1,24 @@
+@(books: Seq[models.Book])(implicit request: RequestHeader)
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Book List</title>
+    </head>
+    <body>
+        <h1>Books</h1>
+        <ul>
+            @for(book <- books) {
+                <li>@book.name - Assigned: @book.assignedStatus
+                <form action="@routes.BookController.deleteBook(book.id)" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+                </li>
+            }
+        </ul>
+        <h2>Add Book</h2>
+        <form action="@routes.BookController.addBook" method="post">
+            <input type="text" name="name" placeholder="Name">
+            <button type="submit">Add</button>
+        </form>
+    </body>
+</html>
