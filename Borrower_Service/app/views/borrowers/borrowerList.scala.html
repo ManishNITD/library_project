@@ -1,0 +1,31 @@
+@import models.Borrower
+@(borrowers: Seq[Borrower])(implicit request: RequestHeader)
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Borrowers</title>
+  </head>
+  <body>
+    <h1>Borrowers</h1>
+    <ul>
+      @for(borrower <- borrowers) {
+        <li>@borrower.name
+        <form action="@routes.BorrowerController.assignBooks(borrower.id)" method="post">
+          <input type="text" name="bookIds" placeholder="Book IDs (comma separated)">
+          <button type="submit">Assign Books</button>
+        </form>
+        <form action="@routes.BorrowerController.unassignBooks(borrower.id)" method="post">
+          <input type="text" name="bookIds" placeholder="Book IDs (comma separated)">
+          <button type="submit">Unassign Books</button>
+        </form>
+        </li>
+      }
+    </ul>
+    <h2>Add Borrower</h2>
+    <form action="@routes.BorrowerController.addBorrower" method="post">
+      <input type="text" name="name" placeholder="Borrower Name">
+      <button type="submit">Add</button>
+    </form>
+  </body>
+</html>
