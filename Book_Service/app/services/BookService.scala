@@ -20,7 +20,7 @@ class BookService @Inject()(bookDAO: BookDAO)(implicit system: ActorSystem, ec: 
   private val kafkaConsumerSettings = ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
     .withBootstrapServers("localhost:9092")
     .withGroupId("book-service-group")
-    .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+    .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
 
   Consumer
     .plainSource(kafkaConsumerSettings, Subscriptions.topics("book-topic"))
