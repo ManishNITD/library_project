@@ -1,16 +1,13 @@
 package daos
 
 import models.Borrower
-
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class BorrowerDAO @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
-
   import dbConfig._
   import profile.api._
 
@@ -32,12 +29,27 @@ class BorrowerDAO @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     db.run(borrowers += dbRow).map(_ => ())
   }
 
-  def updateBooks(borrowerId: Long, bookIds: Seq[Long]): Future[Unit] = {
-    val booksString = bookIds.mkString(",")
-    db.run(borrowers.filter(_.id === borrowerId).map(_.assignedBooks).update(booksString)).map(_ => ())
+  def updateBooks(borrowerId: Long, newBookIds: Seq[Long]): Future[Unit] = {
+    val existingBooksQuery = borrowers.filter(_.id === borrowerId).map(_.assignedBooks).result.headOption
+    db.run(existingBooksQuery).flatMap {
+      case Some(existingBooks) =>
+        val existingBookIds = if (existingBooks.isEmpty) Seq.empty[Long] else existingBooks.split(",").map(_.toLong).toSeq
+        val updatedBookIds = (existingBookIds ++ newBookIds).distinct
+        val booksString = updatedBookIds.mkString(",")
+        db.run(borrowers.filter(_.id === borrowerId).map(_.assignedBooks).update(booksString)).map(_ => ())
+      case None => Future.failed(new Exception("Borrower not found"))
+    }
   }
 
-  def deleteBooks(borrowerId: Long): Future[Unit] = {
-    db.run(borrowers.filter(_.id === borrowerId).map(_.assignedBooks).update("")).map(_ => ())
+  def unassignBooks(borrowerId: Long, bookIds: Seq[Long]): Future[Unit] = {
+    val existingBooksQuery = borrowers.filter(_.id === borrowerId).map(_.assignedBooks).result.headOption
+    db.run(existingBooksQuery).flatMap {
+      case Some(existingBooks) =>
+        val existingBookIds = if (existingBooks.isEmpty) Seq.empty[Long] else existingBooks.split(",").map(_.toLong).toSeq
+        val updatedBookIds = existingBookIds.diff(bookIds)
+        val booksString = updatedBookIds.mkString(",")
+        db.run(borrowers.filter(_.id === borrowerId).map(_.assignedBooks).update(booksString)).map(_ => ())
+      case None => Future.failed(new Exception("Borrower not found"))
+    }
   }
 }

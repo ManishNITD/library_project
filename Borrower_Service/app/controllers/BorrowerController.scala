@@ -4,7 +4,7 @@ import javax.inject._
 import play.api.mvc._
 import services.BorrowerService
 import models.Borrower
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BorrowerController @Inject()(cc: ControllerComponents, borrowerService: BorrowerService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
@@ -23,13 +23,20 @@ class BorrowerController @Inject()(cc: ControllerComponents, borrowerService: Bo
   }
 
   def assignBooks(borrowerId: Long): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    val bookIds = request.body.asFormUrlEncoded.get("bookIds").map(_.toLong)
-    borrowerService.assignBooks(borrowerId, bookIds).map(_ => Redirect(routes.BorrowerController.listBorrowers))
+    request.body.asFormUrlEncoded match {
+      case Some(formData) =>
+        val bookIds = formData.get("bookIds").flatMap(_.headOption).map(_.split(",").map(_.trim.toLong).toSeq).getOrElse(Seq.empty)
+        borrowerService.assignBooks(borrowerId, bookIds).map(_ => Redirect(routes.BorrowerController.listBorrowers))
+      case None => Future.successful(BadRequest("Form data missing"))
+    }
   }
 
   def unassignBooks(borrowerId: Long): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    val bookIds = request.body.asFormUrlEncoded.get("bookIds").map(_.toLong)
-    borrowerService.unassignBooks(borrowerId, bookIds).map(_ => Redirect(routes.BorrowerController.listBorrowers))
+    request.body.asFormUrlEncoded match {
+      case Some(formData) =>
+        val bookIds = formData.get("bookIds").flatMap(_.headOption).map(_.split(",").map(_.trim.toLong).toSeq).getOrElse(Seq.empty)
+        borrowerService.unassignBooks(borrowerId, bookIds).map(_ => Redirect(routes.BorrowerController.listBorrowers))
+      case None => Future.successful(BadRequest("Form data missing"))
+    }
   }
 }
-

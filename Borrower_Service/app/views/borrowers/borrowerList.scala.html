@@ -44,26 +44,27 @@
                         <td>
                         @for(bookId <- borrower.assignedBooks) {
                             <form action="@routes.BorrowerController.unassignBooks(borrower.id)" method="post" class="d-inline">
-                                <input type="hidden" name="bookIds" value="@bookId">
-                                <button type="submit" class="btn btn-danger btn-sm btn-return">ID @bookId</button>
+                                @helper.CSRF.formField
+                            <input type="hidden" name="bookIds" value="@bookId">
+                            <button type="submit" class="btn btn-danger btn-sm btn-return">ID @bookId</button>
                             </form>
                         }
                         </td>
                         <td>
                             <form action="@routes.BorrowerController.assignBooks(borrower.id)" method="post" class="form-inline">
-                                <input type="text" name="bookIds" placeholder="Book IDs (comma separated)" class="form-control mr-2">
-                                <button type="submit" class="btn btn-primary">Assign Books</button>
+                                @helper.CSRF.formField
+                            <input type="text" name="bookIds" placeholder="Book IDs (comma separated)" class="form-control mr-2">
+                            <button type="submit" class="btn btn-primary">Assign Books</button>
                             </form>
                         </td>
                     </tr>
                 }
                 </tbody>
             </table>
-            <h4 class="my-4 text-center">ADD MEMBER</h4><br>
-            <input type="hidden" name="csrfToken" value="@helper.CSRF.getToken.value">
+            <h4 class="my-4 text-center">ADD MEMBER</h4>
             <form action="@routes.BorrowerController.addBorrower" method="post" class="form-inline justify-content-center">
+                @helper.CSRF.formField
                 <input type="text" name="name" placeholder="Member Name" class="form-control mr-2">
-                <br>
                 <button type="submit" class="btn btn-success">Add</button>
             </form>
         </div>

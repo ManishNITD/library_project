@@ -1,4 +1,3 @@
-
 package services
 
 import akka.actor.ActorSystem
@@ -11,7 +10,6 @@ import models.Borrower
 import org.apache.kafka.clients.producer.{ProducerConfig, ProducerRecord}
 import org.apache.kafka.common.serialization.StringSerializer
 import play.api.libs.json.Json
-
 import javax.inject._
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,7 +38,7 @@ class BorrowerService @Inject()(borrowerDAO: BorrowerDAO)(implicit system: Actor
 
   def unassignBooks(borrowerId: Long, bookIds: Seq[Long]): Future[Unit] = {
     for {
-      _ <- borrowerDAO.updateBooks(borrowerId, Seq.empty)
+      _ <- borrowerDAO.unassignBooks(borrowerId, bookIds)
     } yield {
       val records = bookIds.map { bookId =>
         new ProducerRecord[String, String]("book-topic", Json.stringify(Json.obj("id" -> bookId, "assigned" -> false)))
@@ -49,5 +47,4 @@ class BorrowerService @Inject()(borrowerDAO: BorrowerDAO)(implicit system: Actor
         .runWith(Producer.plainSink(kafkaProducerSettings))
     }
   }
-
 }
