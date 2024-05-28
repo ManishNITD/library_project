@@ -23,6 +23,13 @@ class BookController @Inject()(cc: ControllerComponents, bookService: BookServic
   }
 
   def deleteBook(id: Long): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    bookService.deleteBook(id).map(_ => Redirect(routes.BookController.listBooks))
+    bookService.deleteBook(id).map { deleted =>
+      if (deleted) {
+        Redirect(routes.BookController.listBooks)
+      } else {
+        Redirect(routes.BookController.listBooks).flashing("error" -> "Book cannot be deleted as it is assigned.")
+      }
+    }
   }
+
 }

@@ -1,24 +1,81 @@
-@(books: Seq[models.Book])(implicit request: RequestHeader)
+@(books: Seq[models.Book])(implicit request: RequestHeader, flash: Flash)
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>Book List</title>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+        <style>
+                body {
+                    background-color: #000000; /* Set background color to black */
+                    color: #ffffff; /* Set text color to white */
+                }
+                .page-header img {
+                    max-width: 100px; /* Adjust the image width as needed */
+                    vertical-align: middle;
+                    margin-right: 10px; /* Add spacing between image and text */
+                }
+                .page-header h1 {
+                    display: inline-block;
+                    font-size: 24px; /* Adjust the font size as needed */
+                    font-weight: bold;
+                    margin: 0;
+                    vertical-align: middle;
+                }
+        </style>
     </head>
     <body>
-        <h1>Books</h1>
-        <ul>
-            @for(book <- books) {
-                <li>@book.name - Assigned: @book.assignedStatus
-                <form action="@routes.BookController.deleteBook(book.id)" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-                </li>
+        <div class="container">
+            <div class="page-header">
+                <img src="@routes.Assets.versioned("images/library.png")" alt="Library">
+                <h1>LIBRARY BOOKS</h1>
+            </div>
+            @if(flash.get("error").isDefined) {
+                <div class="alert alert-danger">
+                @flash.get("error").get
+                </div>
             }
-        </ul>
-        <h2>Add Book</h2>
-        <form action="@routes.BookController.addBook" method="post">
-            <input type="text" name="name" placeholder="Name">
-            <button type="submit">Add</button>
-        </form>
+            <table class="table table-dark table-striped">
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>ID</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(book <- books) {
+                    <tr>
+                        <td class="book-info">@book.name</td>
+                        <td class="book-info">@book.id</td>
+                        <td>
+                        @if(!book.assignedStatus) {
+                            <form action="@routes.BookController.deleteBook(book.id)" method="post" class="d-inline">
+                                <input type="hidden" name="csrfToken" value="@helper.CSRF.getToken.value">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove Book</button>
+                            </form>
+                        } else {
+                            <span class="badge badge-book-assigned">Book Assigned</span>
+                        }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <br>
+            <h5>ADD NEW BOOK TO LIBRARY</h5>
+            <form action="@routes.BookController.addBook" method="post" class="form-inline">
+                <input type="hidden" name="csrfToken" value="@helper.CSRF.getToken.value">
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Name" class="form-control mr-2">
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+        <div class="container mt-5">
+            <a href="http://localhost:8000/borrowers" class="btn btn-link" style="position: absolute; bottom: 10px; right: 10px;">MEMBER PORTAL</a>
+        </div>
+
     </body>
 </html>

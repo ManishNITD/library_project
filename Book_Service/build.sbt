@@ -39,6 +39,8 @@ libraryDependencies ++= Seq(
   "org.apache.kafka" %% "kafka" % "3.7.0" // Kafka client
 )
 
+//libraryDependencies += "com.typesafe.play" %% "play-filters-helpers" % play.core.PlayVersion.current
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"
 

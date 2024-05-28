@@ -40,5 +40,5 @@ class BookService @Inject()(bookDAO: BookDAO)(implicit system: ActorSystem, ec: 
 
   def addBook(book: Book): Future[Unit] = bookDAO.insert(book)
 
-  def deleteBook(id: Long): Future[Unit] = bookDAO.delete(id)
+  def deleteBook(id: Long): Future[Boolean] = bookDAO.delete(id)
 }

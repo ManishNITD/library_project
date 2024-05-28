@@ -3,29 +3,72 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Borrowers</title>
-  </head>
-  <body>
-    <h1>Borrowers</h1>
-    <ul>
-      @for(borrower <- borrowers) {
-        <li>@borrower.name
-        <form action="@routes.BorrowerController.assignBooks(borrower.id)" method="post">
-          <input type="text" name="bookIds" placeholder="Book IDs (comma separated)">
-          <button type="submit">Assign Books</button>
-        </form>
-        <form action="@routes.BorrowerController.unassignBooks(borrower.id)" method="post">
-          <input type="text" name="bookIds" placeholder="Book IDs (comma separated)">
-          <button type="submit">Unassign Books</button>
-        </form>
-        </li>
-      }
-    </ul>
-    <h2>Add Borrower</h2>
-    <form action="@routes.BorrowerController.addBorrower" method="post">
-      <input type="text" name="name" placeholder="Borrower Name">
-      <button type="submit">Add</button>
-    </form>
-  </body>
+    <head>
+        <title>Library Book Borrowers</title>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+        <style>
+                body {
+                    background-color: black;
+                    color: white;
+                }
+                .table th, .table td {
+                    color: white;
+                }
+                .btn-return {
+                    margin-right: 5px;
+                }
+                .icon-small {
+                    width: 80px;
+                    height: 80px;
+                }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="text-center">
+                <img src="@routes.Assets.versioned("images/student.png")" alt="Library" class="icon-small">
+                <h1 class="my-4 d-inline">MEMBER PORTAL</h1>
+            </div>
+            <table class="table table-dark table-striped">
+                <thead>
+                    <tr>
+                        <th>BORROWER</th>
+                        <th>ASSIGNED BOOKS (ID)</th>
+                        <th>BORROW BOOKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(borrower <- borrowers) {
+                    <tr>
+                        <td>@borrower.name</td>
+                        <td>
+                        @for(bookId <- borrower.assignedBooks) {
+                            <form action="@routes.BorrowerController.unassignBooks(borrower.id)" method="post" class="d-inline">
+                                <input type="hidden" name="bookIds" value="@bookId">
+                                <button type="submit" class="btn btn-danger btn-sm btn-return">ID @bookId</button>
+                            </form>
+                        }
+                        </td>
+                        <td>
+                            <form action="@routes.BorrowerController.assignBooks(borrower.id)" method="post" class="form-inline">
+                                <input type="text" name="bookIds" placeholder="Book IDs (comma separated)" class="form-control mr-2">
+                                <button type="submit" class="btn btn-primary">Assign Books</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <h4 class="my-4 text-center">ADD MEMBER</h4><br>
+            <input type="hidden" name="csrfToken" value="@helper.CSRF.getToken.value">
+            <form action="@routes.BorrowerController.addBorrower" method="post" class="form-inline justify-content-center">
+                <input type="text" name="name" placeholder="Member Name" class="form-control mr-2">
+                <br>
+                <button type="submit" class="btn btn-success">Add</button>
+            </form>
+        </div>
+        <div class="container mt-5">
+            <a href="http://localhost:9000/books" class="btn btn-link" style="position: absolute; bottom: 10px; right: 10px;">BOOKS PORTAL</a>
+        </div>
+    </body>
 </html>

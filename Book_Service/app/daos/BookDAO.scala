@@ -26,7 +26,10 @@ class BookDAO @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: E
 
   def insert(book: Book): Future[Unit] = db.run(books += book).map(_ => ())
 
-  def delete(id: Long): Future[Unit] = db.run(books.filter(_.id === id).delete).map(_ => ())
+  def delete(id: Long): Future[Boolean] = {
+    val query = books.filter(book => book.id === id && !book.assignedStatus)
+    db.run(query.delete).map(_ > 0)
+  }
 
   def updateAssignedStatus(id: Long, assigned: Boolean): Future[Unit] = {
     val query = for (book <- books if book.id === id) yield book.assignedStatus

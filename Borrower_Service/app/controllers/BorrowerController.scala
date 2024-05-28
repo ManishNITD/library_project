@@ -4,7 +4,7 @@ import javax.inject._
 import play.api.mvc._
 import services.BorrowerService
 import models.Borrower
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class BorrowerController @Inject()(cc: ControllerComponents, borrowerService: BorrowerService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
