@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BorrowerService @Inject()(borrowerDAO: BorrowerDAO)(implicit system: ActorSystem, ec: ExecutionContext, mat: Materializer) {
   private val kafkaProducerSettings: ProducerSettings[String, String] =
     ProducerSettings(system, new StringSerializer, new StringSerializer)
-      .withBootstrapServers("localhost:9092")
+      .withBootstrapServers("34.47.143.23:9092")
       .withProperty(ProducerConfig.ACKS_CONFIG, "all")
 
   def allBorrowers(): Future[Seq[Borrower]] = borrowerDAO.all()
