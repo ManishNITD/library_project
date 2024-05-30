@@ -13,12 +13,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import play.api.libs.json.Json
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class BookService @Inject()(bookDAO: BookDAO)(implicit system: ActorSystem, ec: ExecutionContext, mat: Materializer) {
+class BookService @Inject()(bookDAO: BookDAO)(implicit system: ActorSystem, mat: Materializer) {
   private val kafkaConsumerSettings = ConsumerSettings(system, new StringDeserializer, new StringDeserializer)
-    .withBootstrapServers("localhost:9092")
+    .withBootstrapServers("34.47.143.23:9092")
     .withGroupId("book-service-group")
     .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
 
